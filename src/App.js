@@ -1,25 +1,40 @@
-import logo from './logo.svg';
+import { signInWithPopup } from 'firebase/auth';
 import './App.css';
+import { auth, provider } from './firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useEffect, useState } from 'react';
 
 function App() {
+  const [user] = useAuthState(auth)
+  const [result, changeResult] = useState((<h3>ログイン前</h3>));
+  
+  useEffect(() => {
+    
+    if (user != null) {
+      changeResult((<h3>ログイン後</h3>));
+    }
+
+  },[user]);
+  
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {result}
+      <SignInButton />
     </div>
   );
 }
+
+function SignInButton() {
+
+  const signInGoogle = () => {
+    signInWithPopup(auth, provider);
+  }
+
+  return (
+    <button type="button" className="btn btn-primary" onClick={signInGoogle}>googleでログイン</button>
+  );
+}
+
+
 
 export default App;
