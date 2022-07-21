@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { GoogleAuthProvider } from "firebase/auth";
+import { getFirestore } from 'firebase/firestore/lite';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -11,8 +12,12 @@ const firebaseConfig = {
   appId: process.env.REACT_APP_APP_ID
 };
 
+// googleのログイン認証
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-export { auth, provider };
+// firebasebのデータベース取得
+const db = getFirestore(app);
+
+export { auth, provider, db };

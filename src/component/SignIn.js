@@ -43,7 +43,6 @@ function SignInButton() {
   return (
     <div>
         <h3 class="text-muted">ログイン認証</h3>
-        <button type="button" className="btn btn-dark login">Githubでログイン</button>
         <button type="button" className="btn btn-primary login" onClick={signInGoogle}>googleでログイン</button>
     </div>
   );
@@ -68,7 +67,7 @@ function RegisterName() {
             setErrorCheck(true);
         }
         else {
-            setUserInfo({userName: userName, userConfirm: user.email});
+            setUserInfo({userName: userName, userConfirm: user.email, uid: user.uid});
             navigate('/matching')
         }
     }
