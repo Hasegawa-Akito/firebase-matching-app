@@ -1,8 +1,9 @@
 import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {UserNameContext} from "../App"
 import "../css/SignIn.css";
 
 function SignIn() {
@@ -49,10 +50,12 @@ function SignInButton() {
 }
 
 function RegisterName() {
+    const [user] = useAuthState(auth)
     //inputの値を参照
     const inputUserName = useRef("");
-
     const [errorCheck, setErrorCheck] = useState(false);
+    // useContextにより値を受け取り
+    const {userInfo, setUserInfo} = useContext(UserNameContext);
     // ページ遷移
     const navigate = useNavigate()
 
@@ -65,6 +68,7 @@ function RegisterName() {
             setErrorCheck(true);
         }
         else {
+            setUserInfo({userName: userName, userConfirm: user.email});
             navigate('/matching')
         }
     }
