@@ -2,6 +2,7 @@ import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import "../css/SignIn.css";
 
 function SignIn() {
@@ -52,6 +53,8 @@ function RegisterName() {
     const inputUserName = useRef("");
 
     const [errorCheck, setErrorCheck] = useState(false);
+    // ページ遷移
+    const navigate = useNavigate()
 
     // ユーザー名登録処理
     const registerUser = () => {
@@ -62,7 +65,7 @@ function RegisterName() {
             setErrorCheck(true);
         }
         else {
-            console.log(userName);
+            navigate('/matching')
         }
     }
 
