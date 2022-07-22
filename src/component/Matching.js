@@ -1,23 +1,29 @@
-import {useContext} from 'react';
-import {UserNameContext} from "../App"
+import { useContext, useEffect } from 'react';
+import { UserNameContext } from "../App"
+import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore/lite';
 import { db } from '../firebase';
 
 function Matching() {
+    const navigate = useNavigate();
     const {userInfo, setUserInfo} = useContext(UserNameContext);
-    console.log(userInfo.uid);
+
+    useEffect(() => {
+        // データが保持されていなければsignin画面に移動
+        if (!userInfo.userName) {
+            navigate('/SignIn'); 
+        }
+                     
+    },[]);
+    console.log(userInfo);
 
     console.log(getCities(db))
 
     async function getCities(db) {
-        await setDoc(doc(db, "user", userInfo.uid), {
-            userName: userInfo.userName,
-            userConfirm: userInfo.userConfirm,
-            status: "作業中"
-        });
 
         const citiesCol = await collection(db, 'user');
         const citySnapshot = await getDocs(citiesCol);
+        
         const cityList = citySnapshot.docs.map(doc => doc.data());
         return cityList;
     }

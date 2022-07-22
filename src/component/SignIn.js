@@ -3,17 +3,33 @@ import { auth, provider } from '../firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useEffect, useRef, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {UserNameContext} from "../App"
+import { UserNameContext } from "../App"
+import { user_exist, register_user } from "../processing/firestore"
 import "../css/SignIn.css";
 
 function SignIn() {
   const [user] = useAuthState(auth)
   const [authResult, changeAuthResult] = useState((<SignInButton />));
+  const {userInfo, setUserInfo} = useContext(UserNameContext);
+  const navigate = useNavigate();
   
   useEffect(() => {
-    //認証済みならユーザー名登録の画面を表示
+    //認証済み,認証後の処理
     if (user != null) {
-        changeAuthResult((<RegisterName />));
+
+        user_exist(user)
+            .then((userData) => {
+                // データベースに登録済みなら
+                if (userData.userName) {
+                    
+                    setUserInfo(userData); // ユーザー情報を保持
+                    navigate('/matching'); //画面遷移
+                }
+                else {
+                    changeAuthResult((<RegisterName />)); //表示コンポーネント変更
+                }
+            })
+        
     }
   },[user]);
   
@@ -56,7 +72,7 @@ function RegisterName() {
     // useContextにより値を受け取り
     const {userInfo, setUserInfo} = useContext(UserNameContext);
     // ページ遷移
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     // ユーザー名登録処理
     const registerUser = () => {
@@ -67,7 +83,10 @@ function RegisterName() {
             setErrorCheck(true);
         }
         else {
-            setUserInfo({userName: userName, userConfirm: user.email, uid: user.uid});
+            // ユーザー情報を保持
+            const userData = {userName: userName, userConfirm: user.email, uid: user.uid};
+            setUserInfo(userData);
+            register_user(userData); // firestoreのデータベースに登録
             navigate('/matching')
         }
     }
