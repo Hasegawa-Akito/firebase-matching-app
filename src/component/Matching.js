@@ -1,8 +1,9 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { UserNameContext } from "../App"
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore/lite';
 import { db } from '../firebase';
+import { matching } from "../processing/firestore"
 import Header from './Header';
 import "../css/Matching.css";
 import handImg from "../image/hand.png"
@@ -20,15 +21,6 @@ function Matching() {
     },[]);
     
 
-    // async function getCities(db) {
-
-    //     const citiesCol = await collection(db, 'user');
-    //     const citySnapshot = await getDocs(citiesCol);
-        
-    //     const cityList = citySnapshot.docs.map(doc => doc.data());
-    //     return cityList;
-    // }
-
     return (
       <div>
         <Header />
@@ -41,32 +33,53 @@ function Matching() {
 }
   
 function StatusButton() {
-return(
-   
-    <section class="jumbotron text-center my-5">
-        <br></br>
-        <p class="lead text-muted">ステータスを選択しましょう。現在のステータス: </p>
-        <p>
-            <button type="button" class="btn btn-primary me-md-3">休憩中</button>
-            <button type="button" class="btn btn-success me-md-3">作業中</button>
-            <button type="button" class="btn btn-secondary me-md-3">集中モード</button>
-            <button type="button" class="btn btn-warning me-md-3">離席中</button>
-            <button type="button" class="btn btn-dark">帰宅</button>
-        </p>
-        <br/>
-        <p>
-            <button type="button" class="btn btn-info me-md-3">お悩み中</button>
-            <button type="button" class="btn btn-danger">超お悩み中</button>
+    const {userInfo, setUserInfo} = useContext(UserNameContext);
 
-        </p>
+    const selectStatus = (e) => {
+        const status = e;
+        // useStateにおいてobjectの一部を更新する場合
+        setUserInfo(userInfo => ({...userInfo, status: status}));
         
-    </section>
-        
+    }
+
+    return(
     
-);
+        <section class="jumbotron text-center my-5">
+            <br></br>
+            <p class="lead text-muted">ステータスを選択しましょう。現在のステータス: </p>
+            <p>
+                <button type="button" class="btn btn-primary me-md-3" onClick={() => selectStatus("休憩中")}>休憩中</button>
+                <button type="button" class="btn btn-success me-md-3" onClick={() => selectStatus("作業中")}>作業中</button>
+                <button type="button" class="btn btn-secondary me-md-3" onClick={() => selectStatus("集中モード")}>集中モード</button>
+                <button type="button" class="btn btn-warning me-md-3" onClick={() => selectStatus("離席中")}>離席中</button>
+                <button type="button" class="btn btn-dark" onClick={() => selectStatus("帰宅")}>帰宅</button>
+            </p>
+            <br/>
+            <p>
+                <button type="button" class="btn btn-info me-md-3" onClick={() => selectStatus("お悩み中")}>お悩み中</button>
+                <button type="button" class="btn btn-danger" onClick={() => selectStatus("超お悩み中")}>超お悩み中</button>
+            </p>     
+        </section>
+            
+        
+    );
 }
 
 function ResutlMatching() {
+    const {userInfo, setUserInfo} = useContext(UserNameContext);
+    const [matchUsers, setMatchUsers] = useState([])
+
+
+    useEffect(() => {
+        matching(userInfo.status)
+            .then((matchUsers) => {
+                
+                setMatchUsers(matchUsers);
+                
+            });
+
+    },[userInfo.status]);
+
     return(
         <div>
             <div class="d-flex align-items-center p-3 my-3 text-white green rounded shadow-sm">
@@ -87,18 +100,15 @@ function ResutlMatching() {
                     </button>
             </div>
 
-            <div class="">
+            <div>
+
                     <div class="row">
-                        <div class="col-lg-4">
-                            <img id="hasegawa" src={handImg} alt="写真" />
-                            <h2>長谷川</h2>
-                            <p class="text-muted">作業中</p>
-                        </div>
-                        <div class="col-lg-4">
-                            <img id="hasegawa" src={handImg} alt="写真" />
-                            <h2>後藤</h2>
-                            <p class="text-muted">作業中</p>
-                        </div>
+                        {matchUsers.map((matchUser) => 
+                            <div class="col-lg-4"><img src={handImg} alt="挙手画像" />
+                                <h2>{ matchUser.userName }</h2>
+                                <p class="text-muted">{ matchUser.status }</p>
+                            </div>
+                        )}
                     </div>
                     
             </div>

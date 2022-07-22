@@ -21,7 +21,6 @@ function SignIn() {
             .then((userData) => {
                 // データベースに登録済みなら
                 if (userData.userName) {
-                    
                     setUserInfo(userData); // ユーザー情報を保持
                     navigate('/matching'); //画面遷移
                 }
@@ -83,8 +82,8 @@ function RegisterName() {
             setErrorCheck(true);
         }
         else {
-            // ユーザー情報を保持
-            const userData = {userName: userName, userConfirm: user.email, uid: user.uid};
+            // ユーザー情報を保持 statusの初期値は作業中
+            const userData = {userName: userName, userConfirm: user.email, uid: user.uid, status: "作業中"};
             setUserInfo(userData);
             register_user(userData); // firestoreのデータベースに登録
             navigate('/matching')

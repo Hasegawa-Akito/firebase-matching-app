@@ -8,7 +8,7 @@ export const UserNameContext = createContext();
 
 function App() {
   // useContextとuseStateを連携し値を別コンポーネントで変更可能
-  const [userInfo, setUserInfo] = useState({userName: "", userConfirm: "", uid: ""});
+  const [userInfo, setUserInfo] = useState({userName: "", userConfirm: "", uid: "", status: ""});
   const contextValue = {userInfo, setUserInfo};
 
   return (
