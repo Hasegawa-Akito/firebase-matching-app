@@ -1,4 +1,4 @@
-import { query, where, collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore/lite';
+import { query, where, collection, getDocs, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore/lite';
 import { db } from '../firebase';
 
 async function user_exist(user) {
@@ -51,4 +51,11 @@ async function matching(status) {
 
 }
 
-export { user_exist, register_user, matching };
+async function changeStatus(uid, status) {
+    // statusを更新
+    await updateDoc(doc(db, 'user', uid), {
+        status: status,
+    });
+}
+
+export { user_exist, register_user, matching, changeStatus };
