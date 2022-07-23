@@ -1,8 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { UserNameContext } from "../App"
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, doc, setDoc } from 'firebase/firestore/lite';
-import { db } from '../firebase';
 import { matching, changeStatus } from "../processing/firestore"
 import Header from './Header';
 import "../css/Matching.css";
